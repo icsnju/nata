@@ -27,7 +27,7 @@ module.exports = function () {
 
 
   router.get('/devices',deviceApi.devices);
-  router.post('/devices', deviceApi.create);
+  router.post('/devices/:id', deviceApi.create);
   router.delete('/devices/:id', deviceApi.remove);
 
   router.post('/testcases', testcaseApi.create);
