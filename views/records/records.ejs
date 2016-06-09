@@ -43,9 +43,9 @@
                                 <div class="col-sm-8">
                                     <select class="form-control m-b" name="algorithm" id="algorithm">
                                         <option value="dfs">DFS(Depth First)</option>
-                                        <option value="prm">PRM(Pure Random Monkey)</option>
-                                        <option value="rm">RM(Random Monkey)</option>
-                                        <option value="qlm">QLM(QLearning Monkey)</option>
+                                        <!--<option value="prm">PRM(Pure Random Monkey)</option>-->
+                                        <!--<option value="rm">RM(Random Monkey)</option>-->
+                                        <!--<option value="qlm">QLM(QLearning Monkey)</option>-->
                                     </select>
                                 </div>
                             </div>
@@ -137,15 +137,7 @@
                            <td>
                                 <% if(record.status === "ready"){ %>
                                 <a href="#" class="btn-start btn btn-primary btn-xs" role="button"
-                                   data-id="<%= record.id %>"
-                                   data-device="<%= record.device_id %>"
-                                   data-action="<%= record.action_count %>"
-                                   data-package="<%= record.package_name %>"
-                                   data-activity="<%= record.activity_name %>"
-                                   data-algorithm="<%= record.algorithm %>"
-                                   data-setup="<%= record.setup %>"
-                                   data-blacklist="<%= record.blacklist %>"
-                                   data-name="<%= record.app_name %>">开始</a>
+                                   data-id="<%= record.id %>">开始</a>
 
                                 <a href="#" class="btn-remove btn btn-danger btn-xs" role="button"
                                    data-id="<%= record.id %>">删除</a>

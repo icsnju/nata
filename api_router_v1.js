@@ -5,7 +5,7 @@ module.exports = function () {
   var deviceApi = require('./api/v1/api_device.js');
   var apkApi = require('./api/v1/api_apk.js');
   var testcaseApi = require('./api/v1/api_testcase.js');
-  var recordApi = require('./api/v1/api_record.js')();
+  var recordApi = require('./api/v1/api_record.js');
 
   router.post('/apks', apkApi.create);
   router.delete('/apks/:id', apkApi.remove);
