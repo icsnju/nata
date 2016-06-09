@@ -1,0 +1,64 @@
+<% include ../partials/header %>
+
+<div id="testcase-edit">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">编辑录制用例</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form id="form-edit">
+                            <div class="form-group">
+                                <label for="name">用例名称</label>
+                                <input type="text" class="form-control" id="name" value="<%= testcase.name %> ">
+                            </div>
+                            <div class="form-group">
+                                <label for="actions">动作</label>
+                                <textarea class="form-control" rows="15" id="actions"><%= actions %></textarea>
+                            </div>
+                            <button id="btn-save" type="submit" class="btn btn-default"
+                                    data-id="<%= testcase._id %>">保存
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">动作格式指南</h3>
+                    </div>
+                    <div class="panel-body" id="action-panel">
+                        <ol>
+                            <li><tt>[点击]:Tap <span class="text-primary">@[startX],[startY]x[endX],[endY]</span><span
+                                            class="text-success"> [X] [Y]</span></tt></li>
+                            <li><tt>[长按]:LongClick <span class="text-primary">@[startX],[startY]x[endX],[endY]</span><span
+                                            class="text-success"> [X] [Y]</span></tt></li>
+                            <li><tt>[滑动]:Swipe <span class="text-primary">@[startX],[startY]x[endX],[endY]</span> <span
+                                            class="text-success">[Direction]</span></tt></li>
+                            <li><tt>[输入]:TextInput <span class="text-primary">@[startX],[startY]x[endX],[endY]</span><span
+                                            class="text-success"> [X] [Y]</span></tt></li>
+                            <li><tt>[重启]:Restart <span class="text-success">[pkg]</span></tt></li>
+                            <li><tt>[清除数据]:CleanData <span class="text-success">[pkg]</span></tt></li>
+                            <li><tt>[返回]:Back</tt></li>
+                            <li><tt>[主页]:Home</tt></li>
+                            <li><tt>[选项]:Menu</tt></li>
+                        </ol>
+                    </div>
+                    <ul class="list-group">
+                        <li class="list-group-item">[startX] [startY] 为控件左上方坐标</li>
+                        <li class="list-group-item">[endX] [endY] 为控件右下方坐标</li>
+                        <li class="list-group-item">[Direction] 为滑动方向,有UP,DOWN,LEFT,RIGHT</li>
+                        <li class="list-group-item">[X] [Y] 为点击坐标</li>
+                        <li class="list-group-item">[pkg] 为应用包名</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/javascripts/testcase_edit.js"></script>
+<% include ../partials/footer.ejs %>
