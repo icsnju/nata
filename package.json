@@ -1,10 +1,27 @@
 {
-  "name": "server",
-  "version": "0.0.0",
-  "private": true,
+  "name": "nata",
+  "version": "0.0.1",
+  "description": "nata device for android",
+  "main": "index.js",
   "scripts": {
     "start": "node ./bin/www"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+git@github.com:open-nata/nata.git"
+  },
+  "keywords": [
+    "nata",
+    "android ",
+    "test",
+    "adb"
+  ],
+  "author": "CalvinMeng",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/open-nata/nata/issues"
+  },
+  "homepage": "https://github.com/open-nata/nata#readme",
   "dependencies": {
     "async": "^2.0.0-rc.3",
     "body-parser": "~1.13.2",
@@ -18,6 +35,8 @@
     "lodash": "^4.11.1",
     "mongoose": "^4.4.12",
     "morgan": "~1.6.1",
+    "nata-device": "^0.1.12",
+    "nata-dfs": "0.0.7",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.4.5",
     "ws": "^1.1.0"

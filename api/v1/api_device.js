@@ -1,4 +1,5 @@
 var DeviceModel = require('../../models/model_device');
+var Device = require('nata-device')
 
 module.exports.create = function(req, res, next) {
     var device = new DeviceModel();
@@ -30,3 +31,14 @@ module.exports.remove = function(req, res, next) {
     res.status(200).json(record);
   });
 };
+
+module.exports.devices = function(req, res, next) {
+  Device.getOnlineDevices()
+    .then(function(devices){
+      res.status(200).json(devices)
+    })
+    .catch(function(err){
+      next(err)
+    })
+
+}

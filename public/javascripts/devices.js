@@ -1,9 +1,8 @@
 $(function() {
-  var baseUrl = "http://localhost:9001";
   var deviceContaner = {};
-  $('#btn-getdevice').click(function () {
+  $('#refresh-span').click(function () {
     $.ajax({
-      url: baseUrl + '/device',
+      url: '/api/v1/devices',
       type: 'GET',
       success: function (device) {
         deviceContaner = device;

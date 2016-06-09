@@ -26,7 +26,7 @@ module.exports = function () {
   router.get('/apks/:id/:actpath', apkApi.getactions);
 
 
-
+  router.get('/devices',deviceApi.devices);
   router.post('/devices', deviceApi.create);
   router.delete('/devices/:id', deviceApi.remove);
 
