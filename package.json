@@ -36,7 +36,7 @@
     "mongoose": "^4.4.12",
     "morgan": "~1.6.1",
     "nata-device": "^0.1.12",
-    "nata-dfs": "0.0.7",
+    "nata-dfs": "^0.1.0",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.4.5",
     "ws": "^1.1.0"

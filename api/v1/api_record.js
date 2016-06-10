@@ -1,7 +1,48 @@
 var RecordModel = require('../../models/model_record.js');
+var ApkModel = require('../../models/model_apk.js');
 var TestcaseModel = require('../../models/model_testcase.js');
 var eventproxy = require('eventproxy');
 var _ = require('lodash');
+var Device = require('nata-device');
+
+var childProcess = require('child_process');
+var runner = childProcess.fork('runners/Runner.js');
+
+var runningDevices = [];
+
+Device.getTracker().then(function (tracker) {
+    tracker.on('add', function (device) {
+      console.log('Device %s was plugged in', device.id)
+
+    })
+    tracker.on('remove', function (device) {
+      var ids = _.remove(runningDevices, function(id){
+          return id === device.id
+        })
+      if(ids.length !== 0) {
+        runner.send({
+          type: 'stop',
+          device_id: device.id
+        })
+      }
+      console.log('Device %s was unplugged', device.id)
+    })
+    tracker.on('end', function () {
+      console.log('Tracking stopped')
+    })
+  }).
+  catch(function (err) {
+    console.log(err);
+  })
+
+
+runner.on('message', function (m) {
+  if (m.type === 'success' || m.type === 'failure') {
+    _.remove(runningDevices, function (id) {
+      return id === m.device_id;
+    })
+  }
+})
 
 module.exports.create = function (req, res, next) {
   var ep = new eventproxy();
@@ -60,12 +101,34 @@ module.exports.start = function (req, res, next) {
   ep.fail(next);
 
   ep.once('record', function (record) {
-    record.status = "running";
-    record.save(ep.done('status'))
+    var deviceId = record.device_id;
+    Device.isDeviceOnline(deviceId).then(function (isOnline) {
+      if (!isOnline) {
+        return res.status(404).send("设备不在线");
+      } else {
+        ep.emit('device', deviceId);
+      }
+    }).catch(function (err) {
+      next(err);
+    })
+
+    ApkModel.findOne({_id: record.apk_id}).exec(ep.done('apk'));
+
   })
 
-  ep.once('status', function (record) {
-
+  ep.all('record', 'device', 'apk', function (record, device, apk) {
+    record.status = "running";
+    record.save(function (err, record) {
+      if (err) next(err);
+      runner.send({
+        type: 'start',
+        device_id: record.device_id,
+        pkg: apk.package_name,
+        act: apk.activity_name
+      })
+      runningDevices.push(record.device);
+      res.status(200).send("开始");
+    })
   })
 
   RecordModel.findOne({_id: record_id}).exec(ep.done('record'))
