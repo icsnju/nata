@@ -1,317 +1,281 @@
-var RecordModel = require('../../models/model_record.js');
-var ApkModel = require('../../models/model_apk.js');
-var TestcaseModel = require('../../models/model_testcase.js');
-var eventproxy = require('eventproxy');
-var _ = require('lodash');
-var Device = require('nata-device');
-var path = require('path');
+'use strict'
+const RecordModel = require('../../models/model_record.js')
+const ApkModel = require('../../models/model_apk.js')
+const TestcaseModel = require('../../models/model_testcase.js')
+const Eventproxy = require('eventproxy')
+const _ = require('lodash')
+const Device = require('nata-device')
+const path = require('path')
 
 
-var childProcess = require('child_process');
-var exec = childProcess.exec;
-var runner = childProcess.fork('runners/Runner.js');
+const childProcess = require('child_process')
+const exec = childProcess.exec
+const runner = childProcess.fork('runners/Runner.js')
 
-var runningDevices = [];
-var minicap = path.join(__dirname,'../../minicap/');
+const runningDevices = []
+const minicap = path.join(__dirname, '../../minicap/')
 
-Device.getTracker().then(function (tracker) {
-    tracker.on('add', function (device) {
-      console.log('Device %s was plugged in', device.id)
-
-      exec('./run.sh ' + device.id+ ' &', {cwd: minicap }, function(err, stdout, stderr){
-        if(err) console.log(err) ;
-        console.log("execute run.sh");
-        exec('adb -s ' +device.id +' forward tcp:1717 localabstract:minicap',function(err,stdout,stderr){
-          if(err) console.log(err) ;
-          console.log('execute adb');
-        });
-      });
+Device.getTracker().then((tracker) => {
+  tracker.on('add', (device) => {
+    console.log(`Device ${device.id} was plugged in`)
+    exec(`./run.sh ${device.id} &`, { cwd: minicap }, (err) => {
+      if (err) console.log(err)
+      console.log('execute run.sh')
+      exec(`adb -s ${device.id} forward tcp:1717 localabstract:minicap`, (error) => {
+        if (error) console.log(error)
+        console.log('execute adb')
+      })
     })
-
-    tracker.on('remove', function (device) {
-      var ids = _.remove(runningDevices, function(id){
-          return id === device.id
-        })
-      if(ids.length !== 0) {
-        runner.send({
-          type: 'stop',
-          device_id: device.id
-        })
-      }
-      console.log('Device %s was unplugged', device.id)
-    })
-    tracker.on('end', function () {
-      console.log('Tracking stopped')
-    })
-  }).
-  catch(function (err) {
-    console.log(err);
   })
 
+  tracker.on('remove', (device) => {
+    const ids = _.remove(runningDevices, (id) => {
+      return id === device.id
+    })
 
-runner.on('message', function (m) {
+    if (ids.length !== 0) {
+      runner.send({
+        type: 'stop',
+        device_id: device.id,
+      })
+    }
+    console.log(`Device ${device.id} was unplugged`)
+  })
+  tracker.on('end', () => {
+    console.log('Tracking stopped')
+  })
+}).
+catch((err) => {
+  console.log(err)
+})
+
+
+runner.on('message', (m) => {
   if (m.type === 'success' || m.type === 'failure') {
-    _.remove(runningDevices, function (id) {
-      return id === m.device_id;
+    _.remove(runningDevices, (id) => {
+      return id === m.device_id
     })
   }
 })
 
-module.exports.create = function (req, res, next) {
-  var ep = new eventproxy();
-  ep.fail(next);
+module.exports.create = (req, res, next) => {
+  const ep = new Eventproxy()
+  ep.fail(next)
 
-  var record = new RecordModel();
-  record.device_id = req.body.device_id;
-  record.apk_id = req.body.apk_id;
-  record.action_count = req.body.action_count;
-  record.algorithm = req.body.algorithm;
-  record.status = "ready";
-  var testcase_id = req.body.setup;
-  console.log("testcase: " + testcase_id);
+  const record = new RecordModel()
+  record.device_id = req.body.device_id
+  record.apk_id = req.body.apk_id
+  record.action_count = req.body.action_count
+  record.algorithm = req.body.algorithm
+  record.status = 'ready'
+  const testcaseId = req.body.setup
+  console.log(`testcase: ${testcaseId}`)
 
-  ep.on('setup', function () {
-    console.log("setup ");
-    record.save(function (err, record) {
+  ep.on('setup', () => {
+    record.save((err, data) => {
       if (err) {
-        return next(err);
-      } else {
-        res.status(200).json(record);
+        return next(err)
       }
-    });
+      return res.status(200).json(data)
+    })
   })
 
 
-  if (testcase_id) {
-    TestcaseModel.findOne({_id: testcase_id}).exec(ep.done(function (testcase) {
-      for (var i = 0; i < testcase.actions.length; i++) {
-        record.setup.push(testcase.actions[i]);
+  if (testcaseId) {
+    TestcaseModel.findOne({ _id: testcaseId }).exec(ep.done((testcase) => {
+      for (let i = 0; i < testcase.actions.length; i++) {
+        record.setup.push(testcase.actions[i])
       }
-      ep.emit('setup');
-    }));
+      ep.emit('setup')
+    }))
   } else {
-    ep.emit('setup');
+    ep.emit('setup')
   }
-
-
-};
+}
 
 module.exports.remove = function (req, res, next) {
-  var record_id = req.params.id;
-  RecordModel.findOneAndRemove({
-    _id: record_id
-  }, function (err, record) {
-    if (err || !record) {
-      return res.status(500).json();
+  const recordId = req.params.id
+  RecordModel.findOneAndRemove({ _id: recordId }, (err, record) => {
+    if (err) {
+      return next(err)
     }
-    res.status(200).json(record);
-  });
-};
+    return res.status(200).json(record)
+  })
+}
 
-module.exports.start = function (req, res, next) {
-  var record_id = req.params.id;
-  var ep = new eventproxy();
-  ep.fail(next);
+module.exports.start = (req, res, next) => {
+  const recordId = req.params.id
+  const ep = new Eventproxy()
+  ep.fail(next)
 
-  ep.once('record', function (record) {
-    var deviceId = record.device_id;
-    Device.isDeviceOnline(deviceId).then(function (isOnline) {
+  ep.once('record', (record) => {
+    const deviceId = record.device_id
+    Device.isDeviceOnline(deviceId).then((isOnline) => {
       if (!isOnline) {
-        return res.status(404).send("设备不在线");
-      } else {
-        ep.emit('device', deviceId);
+        return res.status(404).send('设备不在线')
       }
-    }).catch(function (err) {
-      next(err);
+      return ep.emit('device', deviceId)
+    }).catch((err) => {
+      next(err)
     })
-
-    ApkModel.findOne({_id: record.apk_id}).exec(ep.done('apk'));
-
+    ApkModel.findOne({ _id: record.apk_id }).exec(ep.done('apk'))
   })
 
-  ep.all('record', 'device', 'apk', function (record, device, apk) {
-    record.status = "running";
-    record.save(function (err, record) {
-      if (err) next(err);
+  ep.all('record', 'device', 'apk', (record, device, apk) => {
+    record.status = 'running'
+    record.save((err, data) => {
+      if (err) next(err)
       runner.send({
         type: 'start',
-        device_id: record.device_id,
+        device_id: data.device_id,
         pkg: apk.package_name,
-        act: apk.activity_name
+        act: apk.activity_name,
       })
-      runningDevices.push(record.device);
-      res.status(200).send("开始");
+      runningDevices.push(data.device)
+      res.status(200).send('开始')
     })
   })
 
-  RecordModel.findOne({_id: record_id}).exec(ep.done('record'))
+  RecordModel.findOne({ _id: recordId }).exec(ep.done('record'))
 }
 
-module.exports.cancel = function (req, res, next) {
-  var record_id = req.params.id;
-  RecordModel.findOne({
-    _id: record_id
-  }, function (err, record) {
-    if (err || !record) {
-      return res.status(500).json();
-    }
-
-    record.status = "failure";
-    record.save(function (err) {
-      if (err) return next(err);
-      res.status(200).send("success");
-    });
-  });
-};
-
-module.exports.finish = function (req, res, next) {
-  var record_id = req.params.id;
-  RecordModel.findOne({
-    _id: record_id
-  }, function (err, record) {
-    if (err || !record) {
-      return res.status(500).json();
-    }
-
-    record.status = "success";
-    record.save(function (err) {
-      if (err) return next(err);
-      res.status(200).send("success");
-    });
-  });
-};
-
-module.exports.getSummary = function (req, res, next) {
-  var record_id = req.params.id;
-
-  RecordModel.findOne({_id: record_id}, function (err, record) {
+module.exports.cancel = (req, res, next) => {
+  const recordId = req.params.id
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
     if (err) {
-      return next(err);
+      return next(err)
     }
-    var result = {};
-    result.xData = _.map(record.summaries, function (summary) {
-      return summary.action;
-    });
-    result.yDataWidget = _.map(record.summaries, function (summary) {
-      return summary.widget;
-    });
-    result.yDataActivity = _.map(record.summaries, function (summary) {
-      return summary.activity;
-    });
 
-    //console.log(record.summaries);
-    res.status(200).json(result);
-  });
+    record.status = 'failure'
+    record.save((error) => {
+      if (error) return next(error)
+      return res.status(200).send('success')
+    })
+  })
 }
 
-module.exports.summary = function (req, res, next) {
-  var record_id = req.params.id;
-  var action = parseInt(req.body.action, 10);
-  var widget = parseInt(req.body.widget, 10);
-  var state = parseInt(req.body.state, 10);
-  var activity = parseInt(req.body.activity, 10);
-  var data = {
-    widget: widget,
-    action: action,
-    activity: activity,
-    state: state
-  };
-
-  // io.sockets.emit("summary", data);
-
-  RecordModel.findOne({
-    _id: record_id
-  }, function (err, record) {
+module.exports.finish = (req, res, next) => {
+  const recordId = req.params.id
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
     if (err || !record) {
-      return res.status(500).json();
+      return next(err)
     }
 
-    record.summaries.push(data);
-    record.save(function (err) {
-      if (err) return next(err);
-      res.status(200).send("success");
-    });
-  });
+    record.status = 'success'
+    record.save((error) => {
+      if (error) return next(error)
+      return res.status(200).send('success')
+    })
+  })
 }
 
-module.exports.activity = function (req, res, next) {
-  var record_id = req.params.id;
-  var activity = req.body.message;
+module.exports.getSummary = (req, res, next) => {
+  const recordId = req.params.id
 
-  // io.sockets.emit("activity", activity);
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err) {
+      return next(err)
+    }
+    const result = {}
+    result.xData = _.map(record.summaries, (summary) => {
+      return summary.action
+    })
+    result.yDataWidget = _.map(record.summaries, (summary) => {
+      return summary.widget
+    })
+    result.yDataActivity = _.map(record.summaries, (summary) => {
+      return summary.activity
+    })
 
-  RecordModel.findOne({
-    _id: record_id
-  }, function (err, record) {
-    if (err || !record) {
-      return res.status(500).json();
+    return res.status(200).json(result)
+  })
+}
+
+module.exports.summary = (req, res, next) => {
+  const recordId = req.params.id
+  const action = parseInt(req.body.action, 10)
+  const widget = parseInt(req.body.widget, 10)
+  const state = parseInt(req.body.state, 10)
+  const activity = parseInt(req.body.activity, 10)
+  const data = {
+    widget,
+    action,
+    activity,
+    state,
+  }
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err) {
+      return next(err)
     }
 
-    record.activities.push(activity);
-    record.save(function (err) {
-      if (err) return next(err);
-      res.status(200).send("success");
-    });
-  });
-};
+    record.summaries.push(data)
+    record.save((error) => {
+      if (error) return next(error)
+      return res.status(200).send('success')
+    })
+  })
+}
 
-module.exports.widget = function (req, res, next) {
-  var record_id = req.params.id;
-  var widget = req.body.message;
+module.exports.activity = (req, res, next) => {
+  const recordId = req.params.id
+  const activity = req.body.message
 
-  // io.sockets.emit("widget", widget);
-
-  RecordModel.findOne({
-    _id: record_id
-  }, function (err, record) {
-    if (err || !record) {
-      return res.status(500).json();
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err) {
+      return next(err)
     }
 
-    record.widgets.push(widget);
-    record.save(function (err) {
-      if (err) return next(err);
-      res.status(200).send("success");
-    });
-  });
-};
+    record.activities.push(activity)
+    record.save((error) => {
+      if (error) return next(error)
+      return res.status(200).send('success')
+    })
+  })
+}
 
-module.exports.action = function (req, res, next) {
-  var record_id = req.params.id;
-  var action = req.body.message;
+module.exports.widget = (req, res, next) => {
+  const recordId = req.params.id
+  const widget = req.body.message
+
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err) return next(err)
+
+    record.widgets.push(widget)
+    record.save((error) => {
+      if (error) return next(error)
+      return res.status(200).send('success')
+    })
+  })
+}
+
+module.exports.action = (req, res, next) => {
+  const recordId = req.params.id
+  const action = req.body.message
   // io.sockets.emit("action", action);
 
-  RecordModel.findOne({
-    _id: record_id
-  }, function (err, record) {
-    if (err || !record) {
-      return res.status(500).json();
-    }
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err) return next(err)
 
-    record.actions.push(action);
-    record.save(function (err) {
-      if (err) return next(err);
-      res.status(200).send("success");
-    });
-  });
-};
+    record.actions.push(action)
+    record.save((error) => {
+      if (error) return next(error)
+      return res.status(200).send('success')
+    })
+  })
+}
 
-module.exports.state = function (req, res, next) {
-  var record_id = req.params.id;
-  var state = req.body.message;
+module.exports.state = (req, res, next) => {
+  const recordId = req.params.id
+  const state = req.body.message
 
-  RecordModel.findOne({
-    _id: record_id
-  }, function (err, record) {
-    if (err || !record) {
-      return res.status(500).json();
-    }
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err) return next(err)
 
-    record.states.push(state);
-    record.save(function (err) {
-      if (err) return next(err);
-      res.status(200).send("success");
-    });
-  });
-};
+    record.states.push(state)
+    record.save((error) => {
+      if (error) return next(error)
+      return res.status(200).send('success')
+    })
+  })
+}
 
