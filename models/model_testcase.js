@@ -1,3 +1,4 @@
+'use strict'
 var mongoose = require('mongoose');
 
 var TestcaseSchema = new mongoose.Schema({

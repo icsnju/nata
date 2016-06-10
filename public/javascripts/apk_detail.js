@@ -51,14 +51,6 @@ $(function() {
         alert("保存出错");
       },
     });
-
-
-    //var toAppend = '<li class="list-group-item" >'
-    //  + item
-    //  + '<span class="remove-blacklist text-danger icon ion-minus-circled pull-right"></span>'
-    //  + '</li>';
-    //
-    //$('#ul-blacklist').append(toAppend);
   })
 
 

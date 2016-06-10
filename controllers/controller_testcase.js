@@ -1,3 +1,4 @@
+'use strict'
 var TestcaseModel = require('../models/model_testcase.js');
 var DeviceModel = require('../models/model_device.js');
 var ApkModel = require('../models/model_apk.js');

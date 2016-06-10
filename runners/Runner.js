@@ -1,3 +1,4 @@
+'use strict'
 var dfsRunner = require('nata-dfs');
 
 process.on('message', function (m) {
