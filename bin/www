@@ -1,56 +1,55 @@
 #!/usr/bin/env node
+'use strict'
 
 /**
  * Module dependencies.
  */
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 
-var Mongoose = require('../config/mongoose');
-var net = require('net');
-var WebSocketServer = require('ws').Server;
-var gm = require('gm');
+const mongoose = require('../config/mongoose')
+const net = require('net')
+const WebSocketServer = require('ws').Server
 
-//首先创建数据库连接
-var db = Mongoose();
+// 首先创建数据库连接
+mongoose()
 
 
-var app = require('../app');
-var debug = require('debug')('server:server');
-var http = require('http');
+const app = require('../app')
+const debug = require('debug')('server:server')
+const http = require('http')
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+const port = normalizePort(process.env.PORT || '3000')
+app.set('port', port)
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+const server = http.createServer(app)
 // var io     = app.io;
 // io.attach(server);
 
 
-var wss = new WebSocketServer({server: server})
-wss.on("connection", function (ws) {
-  var stream = net.connect({
-    port: 1717
+const wss = new WebSocketServer({ server })
+wss.on('connection', (ws) => {
+  const stream = net.connect({
+    port: 1717,
   })
 
-  stream.on('error', function () {
+  stream.on('error', () => {
     console.error('Be sure to run `adb forward tcp:1717 localabstract:minicap`')
-    //process.exit(1)
   })
 
-  var readBannerBytes = 0
-  var bannerLength = 2
-  var readFrameBytes = 0
-  var frameBodyLength = 0
-  var frameBody = new Buffer(0)
-  var banner = {
+  let readBannerBytes = 0
+  let bannerLength = 2
+  let readFrameBytes = 0
+  let frameBodyLength = 0
+  let frameBody = new Buffer(0)
+  const banner = {
     version: 0,
     length: 0,
     pid: 0,
@@ -59,13 +58,12 @@ wss.on("connection", function (ws) {
     virtualWidth: 0,
     virtualHeight: 0,
     orientation: 0,
-    quirks: 0
+    quirks: 0,
   }
 
   function tryRead() {
-    for (var chunk; (chunk = stream.read());) {
-      //console.info('chunk(length=%d)', chunk.length)
-      for (var cursor = 0, len = chunk.length; cursor < len;) {
+    for (let chunk; (chunk = stream.read());) {
+      for (let cursor = 0, len = chunk.length; cursor < len;) {
         if (readBannerBytes < bannerLength) {
           switch (readBannerBytes) {
             case 0:
@@ -128,21 +126,14 @@ wss.on("connection", function (ws) {
 
           cursor += 1
           readBannerBytes += 1
-
-          if (readBannerBytes === bannerLength) {
-            //console.log('banner', banner)
-          }
         } else if (readFrameBytes < 4) {
           frameBodyLength += (chunk[cursor] << (readFrameBytes * 8)) >>> 0
           cursor += 1
           readFrameBytes += 1
-          //console.info('headerbyte%d(val=%d)', readFrameBytes, frameBodyLength)
         } else {
           if (len - cursor >= frameBodyLength) {
-            //console.info('bodyfin(len=%d,cursor=%d)', frameBodyLength, cursor)
-
             frameBody = Buffer.concat([
-              frameBody, chunk.slice(cursor, cursor + frameBodyLength)
+              frameBody, chunk.slice(cursor, cursor + frameBodyLength),
             ])
 
             // Sanity check for JPG header, only here for debugging purposes.
@@ -152,26 +143,12 @@ wss.on("connection", function (ws) {
               process.exit(1)
             }
 
-            //gm(frameBody)
-            //  //.quality(98)
-            //  //.unsharp(2, 0.5, 0.7, 0)
-            //  //.resize(1080/4, 1920/4)
-            //  .toBuffer('JPG', function (err, buffer) {
-            //    if (err) return handle(err);
-            //
-            //    ws.send(buffer, {
-            //      binary: true
-            //    });
-            //
-            //  })
-
             try {
               ws.send(frameBody, {
-                binary: true
-              });
-            }
-            catch (e) { /* handle error */
-              console.log(e.message);
+                binary: true,
+              })
+            } catch (e) { /* handle error */
+              console.log(e.message)
             }
 
 
@@ -179,10 +156,8 @@ wss.on("connection", function (ws) {
             frameBodyLength = readFrameBytes = 0
             frameBody = new Buffer(0)
           } else {
-            //console.info('body(len=%d)', len - cursor)
-
             frameBody = Buffer.concat([
-              frameBody, chunk.slice(cursor, len)
+              frameBody, chunk.slice(cursor, len),
             ])
 
             frameBodyLength -= len - cursor
@@ -196,38 +171,38 @@ wss.on("connection", function (ws) {
 
   stream.on('readable', tryRead)
 
-  ws.on('close', function () {
-    console.info('Lost a client');
-    stream.end();
+  ws.on('close', () => {
+    console.info('Lost a client')
+    stream.end()
   })
-});
+})
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+server.listen(port)
+server.on('error', onError)
+server.on('listening', onListening)
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  const port = parseInt(val, 10)
 
   if (isNaN(port)) {
     // named pipe
-    return val;
+    return val
   }
 
   if (port >= 0) {
     // port number
-    return port;
+    return port
   }
 
-  return false;
+  return false
 }
 
 /**
@@ -236,25 +211,25 @@ function normalizePort(val) {
 
 function onError(error) {
   if (error.syscall !== 'listen') {
-    throw error;
+    throw error
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  const bind = typeof port === 'string'
+    ? `Pipe  ${port}`
+    : `Port  ${port}`
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
+      console.error(`${bind} requires elevated privileges`)
+      process.exit(1)
+      break
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
+      console.error(`${bind} is already in use`)
+      process.exit(1)
+      break
     default:
-      throw error;
+      throw error
   }
 }
 
@@ -263,9 +238,9 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  const addr = server.address()
+  const bind = typeof addr === 'string'
+    ? `Pipe  ${addr}`
+    : `Port  ${addr.port}`
+  debug(`Listening on ${bind}`)
 }

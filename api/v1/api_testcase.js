@@ -1,88 +1,61 @@
-var TestcaseModel = require('../../models/model_testcase.js');
-var _ = require('lodash');
+'use strict'
+const TestcaseModel = require('../../models/model_testcase.js')
 
-module.exports.create = function (req, res, next) {
-  var testcase = new TestcaseModel();
-  testcase.name = req.body.name;
-  testcase.device_id = req.body.device_id;
-  testcase.apk_id = req.body.apk_id;
-  testcase.type = req.body.type;
+module.exports.create = (req, res, next) => {
+  const testcase = new TestcaseModel()
+  testcase.name = req.body.name
+  testcase.device_id = req.body.device_id
+  testcase.apk_id = req.body.apk_id
+  testcase.type = req.body.type
 
-  testcase.save(function (err, testcase) {
-    if (err) {
-      return next(err);
-    } else {
-      res.status(200).json(testcase);
-    }
-  });
-};
+  testcase.save((err, data) => {
+    if (err) return next(err)
+    return res.status(200).json(data)
+  })
+}
 
-module.exports.getactions = function (req, res, next) {
-  var testcase_id = req.params.id;
-  TestcaseModel.findOne({
-    _id: testcase_id
-  }, function (err, testcase) {
-    if (err) {
-      return next(err);
-    }
-    var actions = testcase.actions.join("\n");
-    res.status(200).json(actions);
-  });
-};
+module.exports.getactions = (req, res, next) => {
+  const testcaseId = req.params.id
+  TestcaseModel.findOne({ _id: testcaseId }, (err, testcase) => {
+    if (err) return next(err)
+    const actions = testcase.actions.join('\n')
+    return res.status(200).json(actions)
+  })
+}
 
 
-module.exports.remove = function (req, res, next) {
-  var testcase_id = req.params.id;
-  TestcaseModel.findOneAndRemove({
-    _id: testcase_id
-  }, function (err, testcase) {
-    if (err) {
-      return next(err);
-    }
-    res.status(200).json(testcase);
-  });
-};
+module.exports.remove = (req, res, next) => {
+  const testcaseId = req.params.id
+  TestcaseModel.findOneAndRemove({ _id: testcaseId }, (err, testcase) => {
+    if (err) return next(err)
+    return res.status(200).json(testcase)
+  })
+}
 
-module.exports.finish = function (req, res, next) {
-  var testcase_id = req.params.id;
-  var actions = req.body.actions;
-  console.log(actions);
+module.exports.finish = (req, res, next) => {
+  const testcaseId = req.params.id
+  const actions = req.body.actions
 
+  TestcaseModel.findOne({ _id: testcaseId }, (err, testcase) => {
+    if (err) return next(err)
+    testcase.actions = actions
+    testcase.isFinish = true
 
-  TestcaseModel.findOne({
-    _id: testcase_id
-  }, function (err, testcase) {
-    if (err) {
-      next(err);
-    }
-    //var splits = actions.trim().split("\n");
-    testcase.actions = actions;
-    //_(splits).forEach(function(action){
-    //   testcase.actions.push(action);
-    //});
+    testcase.save((error) => {
+      if (error) return next(error)
+      return res.status(200).send('success')
+    })
+  })
+}
 
-    testcase.isFinish = true;
+module.exports.save = (req, res, next) => {
+  const testcaseId = req.params.id
+  const name = req.body.name
+  const actions = req.body.actions
 
-    testcase.save(function (err) {
-      if (err) return next(err);
-      res.status(200).send("success");
-    });
-  });
-};
-
-module.exports.save = function (req, res, next) {
-  var testcase_id = req.params.id;
-  var name = req.body.name;
-  var actions = req.body.actions;
-  console.log(name);
-  console.log(actions);
-
-
-  TestcaseModel.findOneAndUpdate({_id: testcase_id}, {name:name,actions:actions},function (err, testcase) {
-    if (err) {
-      next(err);
-    }
-    res.status(200).send("success");
-  });
-};
+  TestcaseModel.findOneAndUpdate({ _id: testcaseId }, { name, actions }, (err) => {
+    if (err) return next(err)
+    return res.status(200).send('success')
+  })
+}
 

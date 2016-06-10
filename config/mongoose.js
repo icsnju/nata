@@ -1,13 +1,14 @@
-var config = require('./config'),
-    mongoose = require('mongoose');
+'use strict'
+const config = require('./config')
+const mongoose = require('mongoose')
 
-module.exports = function(){
-    var db = mongoose.connect(config.db,function(err) {
-        if(err) {
-            console.log('connection error', err);
-        } else {
-            console.log('connection successful : ' + config.db);
-        }
-    });
-    return db;
-};
+module.exports = () => {
+  const db = mongoose.connect(config.db, (err) => {
+    if (err) {
+      console.log('connection error', err)
+    } else {
+      console.log(`connection successful : ${config.db}`)
+    }
+  })
+  return db
+}
