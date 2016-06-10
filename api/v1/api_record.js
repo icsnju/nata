@@ -4,17 +4,30 @@ var TestcaseModel = require('../../models/model_testcase.js');
 var eventproxy = require('eventproxy');
 var _ = require('lodash');
 var Device = require('nata-device');
+var path = require('path');
+
 
 var childProcess = require('child_process');
+var exec = childProcess.exec;
 var runner = childProcess.fork('runners/Runner.js');
 
 var runningDevices = [];
+var minicap = path.join(__dirname,'../../minicap/');
 
 Device.getTracker().then(function (tracker) {
     tracker.on('add', function (device) {
       console.log('Device %s was plugged in', device.id)
 
+      exec('./run.sh ' + device.id+ ' &', {cwd: minicap }, function(err, stdout, stderr){
+        if(err) console.log(err) ;
+        console.log("execute run.sh");
+        exec('adb -s ' +device.id +' forward tcp:1717 localabstract:minicap',function(err,stdout,stderr){
+          if(err) console.log(err) ;
+          console.log('execute adb');
+        });
+      });
     })
+
     tracker.on('remove', function (device) {
       var ids = _.remove(runningDevices, function(id){
           return id === device.id

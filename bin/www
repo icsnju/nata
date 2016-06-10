@@ -42,7 +42,7 @@ wss.on("connection", function (ws) {
 
   stream.on('error', function () {
     console.error('Be sure to run `adb forward tcp:1717 localabstract:minicap`')
-    process.exit(1)
+    //process.exit(1)
   })
 
   var readBannerBytes = 0
