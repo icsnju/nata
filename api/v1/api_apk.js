@@ -1,3 +1,4 @@
+'use strict'
 const ApkModel = require('../../models/model_apk')
 const RecordModel = require('../../models/model_record')
 const TestcaseModel = require('../../models/model_testcase')
@@ -176,7 +177,7 @@ module.exports.actpath = (req, res, next) => {
         return res.status(200).send('update shorter')
       })
     } else {
-      res.status(200).send('not change')
+      return res.status(200).send('not change')
     }
   })
 }
