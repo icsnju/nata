@@ -18,8 +18,8 @@ var app = express();
 
 
 
-var routes = require('./web_router')();
-var apiRouterV1 = require('./api_router_v1')();
+var routes = require('./web_router')
+var apiRouterV1 = require('./api_router_v1')
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

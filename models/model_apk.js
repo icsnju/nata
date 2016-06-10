@@ -1,28 +1,28 @@
 'use strict'
-var mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-var ActPathSchema = new mongoose.Schema({
+const ActPathSchema = new mongoose.Schema({
   activity: {
     type: String,
     unique: true,
-    trim: true
+    trim: true,
   },
-  actions: [String]
-},{ id: false });
+  actions: [String],
+}, { id: false })
 
 
-var ApkSchema = new mongoose.Schema({
+const ApkSchema = new mongoose.Schema({
   name: String,
   version: String,
   package_name: {
-    type:String,
+    type: String,
     unique: true,
-    trim: true
+    trim: true,
   },
   actpaths: [ActPathSchema],
   activity_name: String,
   blacklist: [String],
-  create_at: {type: Date, default: Date.now},
-});
+  create_at: { type: Date, default: Date.now },
+})
 
-module.exports = mongoose.model('Apk', ApkSchema);
+module.exports = mongoose.model('Apk', ApkSchema)
