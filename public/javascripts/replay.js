@@ -1,3 +1,4 @@
+/* eslint-disable */
 var actionCount = 0;
 var baseUrl = "http://localhost:9001";
 var replayBtn = $('#btn-replay');

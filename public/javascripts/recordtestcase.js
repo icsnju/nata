@@ -1,3 +1,4 @@
+/* eslint-disable */
 $(function () {
   var baseUrl = "http://localhost:9001";
   var startRecrod = true;

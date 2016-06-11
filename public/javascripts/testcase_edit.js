@@ -1,3 +1,4 @@
+/* eslint-disable */
 $(function() {
   $('#btn-save').on('click',function (e) {
     e.preventDefault();

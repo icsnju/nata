@@ -1,3 +1,4 @@
+/* eslint-disable */
 $(function() {
   $('.btn-del-actpath').click(function (e) {
     e.preventDefault();

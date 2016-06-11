@@ -29,13 +29,13 @@ router.put('/testcases/:id/finish', testcaseApi.finish)
 router.put('/testcases/:id/save', testcaseApi.save)
 
 router.post('/records', recordApi.create)
-router.post('/records/:id/summary', recordApi.summary)
+// router.post('/records/:id/summary', recordApi.summary)
 router.get('/records/:id/summary', recordApi.getSummary)
 
-router.post('/records/:id/activity', recordApi.activity)
-router.post('/records/:id/widget', recordApi.widget)
-router.post('/records/:id/action', recordApi.action)
-router.post('/records/:id/state', recordApi.state)
+// router.post('/records/:id/activity', recordApi.activity)
+// router.post('/records/:id/widget', recordApi.widget)
+// router.post('/records/:id/action', recordApi.action)
+// router.post('/records/:id/state', recordApi.state)
 
 router.put('/records/:id/start', recordApi.start)
 router.put('/records/:id/cancel', recordApi.cancel)

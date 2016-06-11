@@ -1,3 +1,4 @@
+/* eslint-disable */
 $(function() {
   $('#btn-logapk').click(function (e) {
     e.preventDefault();

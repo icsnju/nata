@@ -1,40 +1,4 @@
-// var socket = io();
-//var activityCount = 0;
-//var widgetCount = 0;
-//var actionCount = 0;
-//var stateCount = 0;
-
-// socket.on('activity', function (message) {
-//     activityCount++;
-//     var content = "<tr><td>" + activityCount + "</td><td>" + message + "</td>";
-//     $('#activities').append(content);
-//     var scrollBottom = $('#activity-table').height();
-//     $('#activity-table-wrapper').scrollTop(scrollBottom);
-// });
-
-// socket.on('widget', function (message) {
-//     widgetCount++;
-//     var content = "<tr><td>" + widgetCount + "</td><td>" + message + "</td>";
-//     $('#widgets').append(content);
-//     var scrollBottom = $('#widget-table').height();
-//     $('#widget-table-wrapper').scrollTop(scrollBottom);
-// });
-
-// socket.on('action', function(message) {
-//     actionCount++;
-//     var content = "<tr><td>" + message + "</td>";
-//     $('#actions').append(content);
-//     var scrollBottom = $('#action-table').height();
-//     $('#action-table-wrapper').scrollTop(scrollBottom);
-// });
-
-// socket.on('state', function (message) {
-//     stateCount++;
-//     var content = "<tr><td>" + stateCount + "</td><td>" + message + "</td>";
-//     $('#states').append(content);
-//     var scrollBottom = $('#state-table').height();
-//     $('#state-table-wrapper').scrollTop(scrollBottom);
-// });
+/* eslint-disable */
 
 
 // 基于准备好的dom，初始化echarts实例

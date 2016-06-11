@@ -34,13 +34,11 @@ Device.getTracker().then((tracker) => {
     })
 
     if (ids.length !== 0) {
-      runner.send({
-        type: 'stop',
-        device_id: device.id,
-      })
+      runner.send({ type: 'stop', device_id: device.id })
     }
     console.log(`Device ${device.id} was unplugged`)
   })
+  
   tracker.on('end', () => {
     console.log('Tracking stopped')
   })
@@ -50,11 +48,26 @@ catch((err) => {
 })
 
 
+function submitSummary(recordId, data) {
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err) {
+      return console.log(err)
+    }
+
+    record.summaries.push(data)
+    record.save((error) => {
+      if (error) console.log(error)
+    })
+  })
+}
+
 runner.on('message', (m) => {
   if (m.type === 'success' || m.type === 'failure') {
-    _.remove(runningDevices, (id) => {
-      return id === m.device_id
-    })
+    _.remove(runningDevices, (id) => id === m.device_id)
+  }
+
+  if (m.type === 'summary') {
+    submitSummary(m.record_id, m.summary)
   }
 })
 
@@ -125,14 +138,16 @@ module.exports.start = (req, res, next) => {
     record.status = 'running'
     record.save((err, data) => {
       if (err) next(err)
+
       runner.send({
         type: 'start',
         device_id: data.device_id,
+        record_id: recordId,
         pkg: apk.package_name,
         act: apk.activity_name,
       })
-      runningDevices.push(data.device)
-      res.status(200).send('开始')
+      runningDevices.push(data.device_id)
+      return res.status(200).send('开始')
     })
   })
 
@@ -149,6 +164,11 @@ module.exports.cancel = (req, res, next) => {
     record.status = 'failure'
     record.save((error) => {
       if (error) return next(error)
+      runner.send({
+        type: 'stop',
+        device_id: record.device_id,
+      })
+      _.remove(runningDevices, (id) => record.device_id === id)
       return res.status(200).send('success')
     })
   })
@@ -191,91 +211,94 @@ module.exports.getSummary = (req, res, next) => {
   })
 }
 
-module.exports.summary = (req, res, next) => {
-  const recordId = req.params.id
-  const action = parseInt(req.body.action, 10)
-  const widget = parseInt(req.body.widget, 10)
-  const state = parseInt(req.body.state, 10)
-  const activity = parseInt(req.body.activity, 10)
-  const data = {
-    widget,
-    action,
-    activity,
-    state,
-  }
-  RecordModel.findOne({ _id: recordId }, (err, record) => {
-    if (err) {
-      return next(err)
-    }
+// module.exports.summary = (req, res, next) => {
+//   const recordId = req.params.id
+//   const action = parseInt(req.body.action, 10)
+//   const widget = parseInt(req.body.widget, 10)
+//   const state = parseInt(req.body.state, 10)
+//   const activity = parseInt(req.body.activity, 10)
+//   const data = {
+//     widget,
+//     action,
+//     activity,
+//     state,
+//   }
+//   RecordModel.findOne({ _id: recordId }, (err, record) => {
+//     if (err) {
+//       return next(err)
+//     }
 
-    record.summaries.push(data)
-    record.save((error) => {
-      if (error) return next(error)
-      return res.status(200).send('success')
-    })
-  })
-}
+//     record.summaries.push(data)
+//     record.save((error) => {
+//       if (error) return next(error)
+//       return res.status(200).send('success')
+//     })
+//   })
+// }
 
-module.exports.activity = (req, res, next) => {
-  const recordId = req.params.id
-  const activity = req.body.message
 
-  RecordModel.findOne({ _id: recordId }, (err, record) => {
-    if (err) {
-      return next(err)
-    }
 
-    record.activities.push(activity)
-    record.save((error) => {
-      if (error) return next(error)
-      return res.status(200).send('success')
-    })
-  })
-}
 
-module.exports.widget = (req, res, next) => {
-  const recordId = req.params.id
-  const widget = req.body.message
+// module.exports.activity = (req, res, next) => {
+//   const recordId = req.params.id
+//   const activity = req.body.message
 
-  RecordModel.findOne({ _id: recordId }, (err, record) => {
-    if (err) return next(err)
+//   RecordModel.findOne({ _id: recordId }, (err, record) => {
+//     if (err) {
+//       return next(err)
+//     }
 
-    record.widgets.push(widget)
-    record.save((error) => {
-      if (error) return next(error)
-      return res.status(200).send('success')
-    })
-  })
-}
+//     record.activities.push(activity)
+//     record.save((error) => {
+//       if (error) return next(error)
+//       return res.status(200).send('success')
+//     })
+//   })
+// }
 
-module.exports.action = (req, res, next) => {
-  const recordId = req.params.id
-  const action = req.body.message
-  // io.sockets.emit("action", action);
+// module.exports.widget = (req, res, next) => {
+//   const recordId = req.params.id
+//   const widget = req.body.message
 
-  RecordModel.findOne({ _id: recordId }, (err, record) => {
-    if (err) return next(err)
+//   RecordModel.findOne({ _id: recordId }, (err, record) => {
+//     if (err) return next(err)
 
-    record.actions.push(action)
-    record.save((error) => {
-      if (error) return next(error)
-      return res.status(200).send('success')
-    })
-  })
-}
+//     record.widgets.push(widget)
+//     record.save((error) => {
+//       if (error) return next(error)
+//       return res.status(200).send('success')
+//     })
+//   })
+// }
 
-module.exports.state = (req, res, next) => {
-  const recordId = req.params.id
-  const state = req.body.message
+// module.exports.action = (req, res, next) => {
+//   const recordId = req.params.id
+//   const action = req.body.message
+//   // io.sockets.emit("action", action);
 
-  RecordModel.findOne({ _id: recordId }, (err, record) => {
-    if (err) return next(err)
+//   RecordModel.findOne({ _id: recordId }, (err, record) => {
+//     if (err) return next(err)
 
-    record.states.push(state)
-    record.save((error) => {
-      if (error) return next(error)
-      return res.status(200).send('success')
-    })
-  })
-}
+//     record.actions.push(action)
+//     record.save((error) => {
+//       if (error) return next(error)
+//       return res.status(200).send('success')
+//     })
+//   })
+// }
+
+// module.exports.state = (req, res, next) => {
+//   const recordId = req.params.id
+//   const state = req.body.message
+
+//   RecordModel.findOne({ _id: recordId }, (err, record) => {
+//     if (err) return next(err)
+
+//     record.states.push(state)
+//     record.save((error) => {
+//       if (error) return next(error)
+//       return res.status(200).send('success')
+//     })
+//   })
+// }
 
