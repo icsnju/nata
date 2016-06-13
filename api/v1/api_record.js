@@ -21,10 +21,10 @@ Device.getTracker().then((tracker) => {
     exec(`./run.sh ${device.id} &`, { cwd: minicap }, (err) => {
       if (err) console.log(err)
       console.log('execute run.sh')
-      exec(`adb -s ${device.id} forward tcp:1717 localabstract:minicap`, (error) => {
-        if (error) console.log(error)
-        console.log('execute adb')
-      })
+      // exec(`adb -s ${device.id} forward tcp:1717 localabstract:minicap`, (error) => {
+      //  if (error) console.log(error)
+      //  console.log('execute adb')
+      // })
     })
   })
 
@@ -38,7 +38,7 @@ Device.getTracker().then((tracker) => {
     }
     console.log(`Device ${device.id} was unplugged`)
   })
-  
+
   tracker.on('end', () => {
     console.log('Tracking stopped')
   })

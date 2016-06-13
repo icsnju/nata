@@ -1,6 +1,5 @@
 /* eslint-disable */
 $(function () {
-  var baseUrl = "http://localhost:9001";
   var startRecrod = true;
 
   var ActionType = {
@@ -113,8 +112,9 @@ $(function () {
     ele.prop("disabled", true);
     var action = ActionType.BACK;
 
+
     $.ajax({
-      url: baseUrl + "/action",
+      url: "/api/v1/devices/"+device_id+"/action",
       type: 'POST',
       data: {"action": action},
       success: function (message) {
@@ -129,17 +129,19 @@ $(function () {
   });
 
   $('#btn-home').click(function (e) {
-    var action = ActionType.HOME;
     var ele = $(this);
     ele.prop("disabled", true);
+    var action = ActionType.HOME;
+
 
     $.ajax({
-      url: baseUrl + "/action",
+      url: "/api/v1/devices/"+device_id+"/action",
       type: 'POST',
       data: {"action": action},
       success: function (message) {
-        if (startRecrod) $('#testcase').append(listString + action + "</li>");
+        if (startRecrod)$('#testcase').append(listString + action + "</li>");
         ele.prop("disabled", false);
+
       },
       error: function () {
         ele.prop("disabled", false);
@@ -148,17 +150,19 @@ $(function () {
   });
 
   $('#btn-menu').click(function (e) {
-    var action = ActionType.MENU;
     var ele = $(this);
     ele.prop("disabled", true);
+    var action = ActionType.MENU;
+
 
     $.ajax({
-      url: baseUrl + "/action",
+      url: "/api/v1/devices/"+device_id+"/action",
       type: 'POST',
       data: {"action": action},
       success: function (message) {
-        if (startRecrod) $('#testcase').append(listString + action + "</li>");
+        if (startRecrod)$('#testcase').append(listString + action + "</li>");
         ele.prop("disabled", false);
+
       },
       error: function () {
         ele.prop("disabled", false);
@@ -172,7 +176,7 @@ $(function () {
     var action = ActionType.START_APP + " " + apk.package_name + "/" + apk.activity_name;
 
     $.ajax({
-      url: baseUrl + "/action",
+      url: "/api/v1/devices/"+device_id+"/action",
       type: 'POST',
       data: {"action": action},
       success: function (message) {
@@ -191,7 +195,7 @@ $(function () {
     var action = ActionType.CLEAN_DATA + " " + apk.package_name;
 
     $.ajax({
-      url: baseUrl + "/action",
+      url: "/api/v1/devices/"+device_id+"/action",
       type: 'POST',
       data: {"action": action},
       success: function (message) {
@@ -264,10 +268,11 @@ $(function () {
     ele.text("获取中...");
     ele.prop("disabled", true);
     $.ajax({
-      url: baseUrl + "/actions",
+      url: "/api/v1/devices/"+device_id+"/actions",
       type: 'GET',
-      success: function (message) {
-        var actions = message.trim().split('\n');
+      success: function (actions) {
+        //alert(message)
+        //var actions = message.trim().split('\n');
         var btnGroupString = '<div class="btn-group btn-group-justified" role="group" aria-label="...">';
         var toAppend = btnGroupString;
 
@@ -367,14 +372,11 @@ $(function () {
     ele.prop("disabled", true);
     var actionType = ele.data("action");
     var at = ele.data("at");
-    var x = ele.data("x");
-    var y = ele.data("y");
     var direction = ele.data("direction");
     var action = actionType + " " + at;
     switch (actionType) {
       case ActionType.TAP:
       case ActionType.LONG_CLICK:
-        action += " " + x + " " + y;
         break;
       case ActionType.INPUT:
         var textinput =prompt("请输入文本内容","")
@@ -384,8 +386,7 @@ $(function () {
           ele.prop("disabled", false);
           return;
         }
-        action += " " + x + " " + y + " " + textinput;
-        //$('#textinput').val("");
+        action +=" " + textinput;
         break;
       case ActionType.SWIPE:
         action += " " + direction;
@@ -393,7 +394,7 @@ $(function () {
     }
 
     $.ajax({
-      url: baseUrl + "/action",
+      url: "/api/v1/devices/"+device_id+"/action",
       type: 'POST',
       data: {"action": action},
       success: function (message) {

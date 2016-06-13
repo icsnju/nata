@@ -21,6 +21,8 @@ router.get('/apks/:id/:actpath', apkApi.getactions)
 router.get('/devices', deviceApi.devices)
 router.post('/devices/:id', deviceApi.create)
 router.delete('/devices/:id', deviceApi.remove)
+router.post('/devices/:id/action', deviceApi.fireAction)
+router.get('/devices/:id/actions', deviceApi.uiActions)
 
 router.post('/testcases', testcaseApi.create)
 router.delete('/testcases/:id', testcaseApi.remove)
@@ -29,7 +31,6 @@ router.put('/testcases/:id/finish', testcaseApi.finish)
 router.put('/testcases/:id/save', testcaseApi.save)
 
 router.post('/records', recordApi.create)
-// router.post('/records/:id/summary', recordApi.summary)
 router.get('/records/:id/summary', recordApi.getSummary)
 
 // router.post('/records/:id/activity', recordApi.activity)

@@ -46,3 +46,29 @@ module.exports.devices = (req, res, next) => {
     next(err)
   })
 }
+
+module.exports.fireAction = (req, res, next) => {
+  const deviceId = req.params.id
+  const action = req.body.action
+  const device = new Device(deviceId)
+  device.executeAction(action)
+  .then(() => {
+    return res.status(200).send('success')
+  })
+  .catch((err) => {
+    next(err)
+  })
+}
+
+module.exports.uiActions = (req, res, next) => {
+  const deviceId = req.params.id
+  const device = new Device(deviceId)
+  device.getUIActionCommands()
+  .then((actions) => {
+    return res.status(200).json(actions)
+  })
+  .catch((err) => {
+    next(err)
+  })
+}
+
