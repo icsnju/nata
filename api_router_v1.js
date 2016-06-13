@@ -22,7 +22,9 @@ router.get('/devices', deviceApi.devices)
 router.post('/devices/:id', deviceApi.create)
 router.delete('/devices/:id', deviceApi.remove)
 router.post('/devices/:id/action', deviceApi.fireAction)
+router.post('/devices/:id/actions', deviceApi.fireActions)
 router.get('/devices/:id/actions', deviceApi.uiActions)
+
 
 router.post('/testcases', testcaseApi.create)
 router.delete('/testcases/:id', testcaseApi.remove)

@@ -9,7 +9,7 @@ const TestcaseController = require('./controllers/controller_testcase.js')
 
 /* GET home page. */
 router.get('/', (req, res) => {
-  return res.render('index', { title: '首页' })
+  return res.redirect('/devices')
 })
 
 /**

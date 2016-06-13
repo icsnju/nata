@@ -23,7 +23,7 @@ module.exports.replay = (req, res, next) => {
   const recordId = req.params.id
   RecordModel.findOne({ _id: recordId }, (err, record) => {
     if (err) return next(err)
-    return res.render('replay', { title: '回放', actions: record.actions })
+    return res.render('replay', { title: '回放', actions: record.actions, device_id: record.device_id })
   })
 }
 

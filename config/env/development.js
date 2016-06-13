@@ -1,5 +1,5 @@
 'use strict'
 module.exports = {
   sessionSecret: 'developmentSessionSecret',
-  db: 'mongodb://localhost/nata',
+  db: 'mongodb://localhost/natajs',
 }

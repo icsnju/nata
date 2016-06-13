@@ -50,6 +50,7 @@ module.exports.devices = (req, res, next) => {
 module.exports.fireAction = (req, res, next) => {
   const deviceId = req.params.id
   const action = req.body.action
+  console.log(action)
   const device = new Device(deviceId)
   device.executeAction(action)
   .then(() => {
@@ -66,6 +67,21 @@ module.exports.uiActions = (req, res, next) => {
   device.getUIActionCommands()
   .then((actions) => {
     return res.status(200).json(actions)
+  })
+  .catch((err) => {
+    next(err)
+  })
+}
+
+module.exports.fireActions = (req, res, next) => {
+  const deviceId = req.params.id
+  const actions = req.body.actions
+  console.log(actions)
+  const device = new Device(deviceId)
+
+  device.executeActions(actions)
+  .then(() => {
+    return res.status(200).json('success')
   })
   .catch((err) => {
     next(err)

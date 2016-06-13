@@ -50,7 +50,8 @@
 </div>
 
 <script type="text/javascript">
-    var actions = <%- JSON.stringify(actions.join("\n")) %>;
+    var actions = <%- JSON.stringify(actions) %>;
+    var device_id = <%- JSON.stringify(device_id) %>;
 </script>
 <script src="/javascripts/replay.js"></script>
 <script>

@@ -78,6 +78,6 @@ module.exports.replay = (req, res, next) => {
   TestcaseModel.findOne({ _id: testcaseId }).exec(ep.done('testcase'))
 
   ep.on('testcase', (testcase) => {
-    return res.render('replay', { title: '测试用例回放', actions: testcase.actions })
+    return res.render('replay', { title: '测试用例回放', actions: testcase.actions, device_id: testcase.device_id })
   })
 }
