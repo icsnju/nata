@@ -55,11 +55,10 @@ $(function () {
       url: '/api/v1/records/' + record_id + '/start',
       type: 'PUT',
       success: function (message) {
-        // console.log("进入running状态");
         window.location.href = "/records/" + record_id + "/run";
       },
       error: function (message) {
-        alert("状态失败");
+        alert("开始运行失败");
         return false;
       }
     });
