@@ -5,7 +5,10 @@ const map = new Map()
 
 process.on('message', (m) => {
   if (m.type === 'start') {
-    const runner = new DfsRunner(m.device_id, null, m.pkg, m.act)
+    console.log(m.setup)
+    const runner = new DfsRunner(m.device_id, m.pkg, m.act, {
+      setup: m.setup,
+    })
     map.set(m.device_id, runner)
     // track summary
     const result = runner.result
@@ -13,6 +16,14 @@ process.on('message', (m) => {
       process.send(
         { type: 'summary', record_id: m.record_id, summary }
       )
+    })
+
+    result.on('activity', (activity) => {
+      console.log(activity)
+    })
+
+    result.on('action', (action) => {
+      console.log(action)
     })
 
     runner.play().then(() => {

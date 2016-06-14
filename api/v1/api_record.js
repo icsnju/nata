@@ -135,18 +135,24 @@ module.exports.start = (req, res, next) => {
   })
 
   ep.all('record', 'device', 'apk', (record, device, apk) => {
+    console.log('hello')
     record.status = 'running'
-    record.save((err, data) => {
-      if (err) next(err)
 
-      runner.send({
-        type: 'start',
-        device_id: data.device_id,
-        record_id: recordId,
-        pkg: apk.package_name,
-        act: apk.activity_name,
-      })
-      runningDevices.push(data.device_id)
+    runner.send({
+      type: 'start',
+      device_id: record.device_id,
+      record_id: recordId,
+      pkg: apk.package_name,
+      act: apk.activity_name,
+      setup: record.setup,
+    })
+    runningDevices.push(record.device_id)
+
+    record.save((err) => {
+      if (err) {
+        console.log(err)
+        next(err)
+      }
       return res.status(200).send('开始')
     })
   })
