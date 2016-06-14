@@ -79,14 +79,14 @@ $(function () {
     $.ajax({
       url: "/api/v1/testcases/" + testcase_id,
       type: 'GET',
-      success: function (data) {
+      success: function (actions) {
         $.ajax({
-          url: baseUrl + "/actions",
+          url: "/api/v1/devices/" + device_id + "/actions",
           type: 'POST',
-          data: {"actions": data},
+          data: {"actions": actions},
+          traditional: true,
           success: function () {
             var toAppend = "";
-            var actions = data.trim().split("\n");
             for(var i = 0 ; i< actions.length;i++){
               toAppend += listString + actions[i] + "</li>"
             }
@@ -271,8 +271,6 @@ $(function () {
       url: "/api/v1/devices/"+device_id+"/actions",
       type: 'GET',
       success: function (actions) {
-        //alert(message)
-        //var actions = message.trim().split('\n');
         var btnGroupString = '<div class="btn-group btn-group-justified" role="group" aria-label="...">';
         var toAppend = btnGroupString;
 
@@ -297,36 +295,6 @@ $(function () {
           if (i % 5 == 0 && i !== actions.length) {
             toAppend += '</div>' + btnGroupString;
           }
-
-
-          //  toAppend += "<td>" + actionType + "</td>";
-          //  switch (actionType) {
-          //    case ActionType.BACK :
-          //    case ActionType.HOME :
-          //    case ActionType.MENU :
-          //      toAppend +="<td></td><td></td>";
-          //      break;
-          //    case ActionType.CLEAN_DATA :
-          //      //var pkgAct = params[1];
-          //      //toAppend +="<td></td><td>"+pkgAct + "</td>";
-          //      //break;
-          //    case ActionType.START_APP :
-          //      var pkgAct = params[1];
-          //      toAppend +="<td></td><td>"+pkgAct + "</td>";
-          //      break;
-          //    case ActionType.LONG_CLICK :
-          //      //var xy = params[1].split(" ",2);
-          //      //toAppend +="<td>"+ xy[0] + "</td><td>"+ xy[1]+ "</td>";
-          //      //break;
-          //    case ActionType.TAP:
-          //    case ActionType.SWIPE:
-          //      toAppend +="<td>"+ params[1] + "</td><td>"+ params[2]+ "</td>";
-          //      break;
-          //    case ActionType.INPUT:
-          //      var xy = params[1].split(" ",2);
-          //      toAppend +="<td>"+ params[1] + "</td><td>"+ params[2]+params[3]+ "</td>";
-          //  }
-          //  toAppend += "<td>"+"执行"+"</td></tr>";
         }
         toAppend += "</div>";
         console.log(toAppend);
@@ -351,7 +319,6 @@ $(function () {
     var g = canvasWrapper.getContext("2d");
 
     if (at !== undefined) {
-      //console.log(at);
       var coodinates = at.substr(1).split(/[,x]/);
       var startX = parseInt(coodinates[0], 10) / 3;
       var startY = parseInt(coodinates[1], 10) / 3;
@@ -405,7 +372,6 @@ $(function () {
         ele.prop("disabled", false);
       }
     });
-    //console.log(action);
   });
 
 });

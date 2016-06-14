@@ -18,7 +18,7 @@ module.exports.getactions = (req, res, next) => {
   const testcaseId = req.params.id
   TestcaseModel.findOne({ _id: testcaseId }, (err, testcase) => {
     if (err) return next(err)
-    const actions = testcase.actions.join('\n')
+    const actions = testcase.actions
     return res.status(200).json(actions)
   })
 }
