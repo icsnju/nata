@@ -19,11 +19,15 @@ process.on('message', (m) => {
     })
 
     result.on('activity', (activity) => {
-      console.log(activity)
+      process.send(
+        { type: 'log', record_id: m.record_id, log: `new activity: ${activity}` }
+      )
     })
 
     result.on('action', (action) => {
-      console.log(action)
+      process.send(
+        { type: 'log', record_id: m.record_id, log: `action: ${action}` }
+      )
     })
 
     runner.play().then(() => {
@@ -35,7 +39,10 @@ process.on('message', (m) => {
       process.send({ type: 'failure', device_id: m.device_id })
     })
   } else if (m.type === 'stop') {
-    map.get(m.device_id).stop()
-    map.delete(m.device_id)
+    const device = map.get(m.device_id)
+    if (device) {
+      device.stop()
+      map.delete(m.device_id)
+    }
   }
 })

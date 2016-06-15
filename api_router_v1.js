@@ -33,7 +33,7 @@ router.put('/testcases/:id/finish', testcaseApi.finish)
 router.put('/testcases/:id/save', testcaseApi.save)
 
 router.post('/records', recordApi.create)
-router.get('/records/:id/summary', recordApi.getSummary)
+router.get('/records/:id/data', recordApi.getData)
 
 // router.post('/records/:id/activity', recordApi.activity)
 // router.post('/records/:id/widget', recordApi.widget)

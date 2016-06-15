@@ -4,7 +4,7 @@
         <div style="width: 364px; float: left;">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">设备屏幕 360 x 640 </h3>
+                    <h3 class="panel-title">设备屏幕 360 x 640 <span id="cancel-task" class="text-danger ion-android-cancel pull-right"> 取消 </span></h3>
                 </div>
                 <div class="panel-body" id="container">
                     <canvas id="canvas-device" width="360" height="640"></canvas>
@@ -13,42 +13,40 @@
         </div>
         <div style=" margin-left: 10px;">
             <div class="row">
-                <!--<div class="col-lg-4">-->
-                    <!--<div class="panel panel-info">-->
-                        <!--<div class="panel-heading">-->
-                            <!--<h3 class="panel-title">执行动作</h3>-->
-                        <!--</div>-->
-                        <!--<div class="table-wrapper" id="action-table-wrapper">-->
-                            <!--<table class="table table-striped" id="action-table">-->
-                                <!--<tbody id="actions">-->
-                                <!--</tbody>-->
-                            <!--</table>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <div class="col-lg-8">
+                <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Activity变迁</h3>
+                            <h3 class="panel-title">Activity</h3>
                         </div>
                         <div id="activity-chart">
                             <div id="echarts-activity" style="width: 100%; height:300px;"></div>
                         </div>
                     </div>
+                </div>
+                <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Widget变迁</h3>
+                            <h3 class="panel-title">Log</h3>
                         </div>
-                        <div id="widget-chart">
-                            <div id="echarts-widget" style="width: 100%; height:300px;"></div>
+                        <div class="table-wrapper" id="log-table-wrapper">
+                            <table class="table table-striped" id="log-table">
+                                <tbody id="log">
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">截图</h3>
+                        </div>
+                        <div id="shoots">
 
-
+                        </div>
+                    </div>
                 </div>
             </div>
-
-
 
         </div>
     </div>

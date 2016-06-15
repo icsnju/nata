@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 
 const summarySchema = new mongoose.Schema({
   action: Number,
-  widget: Number,
   state: Number,
   activity: Number,
 })
@@ -27,6 +26,7 @@ const RecordSchema = new mongoose.Schema({
   widgets: [String],
   actions: [String],
   states: [String],
+  logs: [String],
   create_at: { type: Date, default: Date.now },
   end_at: { type: Date, default: Date.now },
 })

@@ -61,6 +61,18 @@ function submitSummary(recordId, data) {
   })
 }
 
+function submitLog(recordId, data) {
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err || !record) {
+      return console.log(err)
+    }
+    record.logs.push(data)
+    record.save((error) => {
+      if (error) console.log(error)
+    })
+  })
+}
+
 runner.on('message', (m) => {
   if (m.type === 'success' || m.type === 'failure') {
     _.remove(runningDevices, (id) => id === m.device_id)
@@ -68,6 +80,10 @@ runner.on('message', (m) => {
 
   if (m.type === 'summary') {
     submitSummary(m.record_id, m.summary)
+  }
+
+  if (m.type === 'log') {
+    submitLog(m.record_id, m.log)
   }
 })
 
@@ -129,6 +145,7 @@ module.exports.start = (req, res, next) => {
       }
       return ep.emit('device', deviceId)
     }).catch((err) => {
+      console.log(err)
       next(err)
     })
     ApkModel.findOne({ _id: record.apk_id }).exec(ep.done('apk'))
@@ -147,6 +164,7 @@ module.exports.start = (req, res, next) => {
       setup: record.setup,
     })
     runningDevices.push(record.device_id)
+    console.log('send')
 
     record.save((err) => {
       if (err) {
@@ -195,7 +213,7 @@ module.exports.finish = (req, res, next) => {
   })
 }
 
-module.exports.getSummary = (req, res, next) => {
+module.exports.getData = (req, res, next) => {
   const recordId = req.params.id
 
   RecordModel.findOne({ _id: recordId }, (err, record) => {
@@ -206,12 +224,11 @@ module.exports.getSummary = (req, res, next) => {
     result.xData = _.map(record.summaries, (summary) => {
       return summary.action
     })
-    result.yDataWidget = _.map(record.summaries, (summary) => {
-      return summary.widget
-    })
     result.yDataActivity = _.map(record.summaries, (summary) => {
       return summary.activity
     })
+
+    result.logs = record.logs
 
     return res.status(200).json(result)
   })
