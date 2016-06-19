@@ -15,16 +15,18 @@ const runner = childProcess.fork('runners/Runner.js')
 const runningDevices = []
 const minicap = path.join(__dirname, '../../minicap/')
 
+exec(`adb forward tcp:1717 localabstract:minicap`, (error) => {
+  if (error) console.log(error)
+  console.log('execute adb')
+})
+
 Device.getTracker().then((tracker) => {
   tracker.on('add', (device) => {
     console.log(`Device ${device.id} was plugged in`)
     exec(`./run.sh ${device.id} &`, { cwd: minicap }, (err) => {
       if (err) console.log(err)
       console.log('execute run.sh')
-      // exec(`adb -s ${device.id} forward tcp:1717 localabstract:minicap`, (error) => {
-      //  if (error) console.log(error)
-      //  console.log('execute adb')
-      // })
+
     })
   })
 
@@ -162,9 +164,9 @@ module.exports.start = (req, res, next) => {
       pkg: apk.package_name,
       act: apk.activity_name,
       setup: record.setup,
+      action_count: record.action_count,
     })
     runningDevices.push(record.device_id)
-    console.log('send')
 
     record.save((err) => {
       if (err) {
@@ -217,9 +219,10 @@ module.exports.getData = (req, res, next) => {
   const recordId = req.params.id
 
   RecordModel.findOne({ _id: recordId }, (err, record) => {
-    if (err) {
+    if (err || !record) {
       return next(err)
     }
+
     const result = {}
     result.xData = _.map(record.summaries, (summary) => {
       return summary.action

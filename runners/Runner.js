@@ -8,6 +8,7 @@ process.on('message', (m) => {
     console.log(m.setup)
     const runner = new DfsRunner(m.device_id, m.pkg, m.act, {
       setup: m.setup,
+      action_count: m.action_count,
     })
     map.set(m.device_id, runner)
     // track summary

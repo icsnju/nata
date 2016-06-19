@@ -4,7 +4,9 @@
         <div style="width: 364px; float: left;">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">设备屏幕 360 x 640 <span id="cancel-task" class="text-danger ion-android-cancel pull-right"> 取消 </span></h3>
+                    <h3 class="panel-title">设备屏幕 360 x 640
+                        <span id="cancel-task" class="text-danger ion-android-cancel pull-right"> 取消 </span>
+                    </h3>
                 </div>
                 <div class="panel-body" id="container">
                     <canvas id="canvas-device" width="360" height="640"></canvas>
@@ -13,7 +15,21 @@
         </div>
         <div style=" margin-left: 10px;">
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">运行情况</h3>
+                        </div>
+                        <div id="status">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                    <span class="sr-only">45% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Activity</h3>
@@ -23,7 +39,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Log</h3>
@@ -36,16 +52,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">截图</h3>
-                        </div>
-                        <div id="shoots">
 
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>
