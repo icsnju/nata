@@ -1,0 +1,36 @@
+@startuml
+
+package "Nata组织管理构图" {
+[项目] - [待测软件制品]
+[待测软件制品] --> [各个版本]
+}
+
+cloud "Test Technology" {
+    [各个版本] --> [手动录制测试用例Record]
+    [各个版本] --> [随机测试Monkey]
+    [各个版本] --> [深度遍历DFS]
+    [各个版本] --> [进化算法EA]
+    [各个版本] --> [智能遍历DFS+]
+}
+
+node "测试集合" {
+    [手动录制测试用例Record] --> [测试用例集]
+}
+
+node "测试用例" {
+    [测试用例集] --> [Test Case]
+    [随机测试Monkey] --> [Test Case]
+    [深度遍历DFS] --> [Test Case]
+    [进化算法EA] --> [Test Case]
+    [智能遍历DFS+] --> [Test Case]
+    [Test Case] --> [测试结果]
+}
+
+package "测试结果" {
+    [树形图]
+    [运行脚本]
+    [缺陷]
+    [测试日志]
+}
+
+@enduml
