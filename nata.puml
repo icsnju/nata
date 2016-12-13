@@ -1,36 +1,106 @@
 @startuml
 
-package "Nata组织管理构图" {
-[项目] - [待测软件制品]
-[待测软件制品] --> [各个版本]
+  '一个测试工程的类
+  class Project {
+     String name
+     String description
+     String coverPic
+     Apk[] apkList
+  }
+
+  '一个Apk,有自己的版本,以及关联对应的一组测试计划
+  class Apk {
+      String version
+      TestPlan[] plans
+  }
+
+
+ '一个测试计划针对一个版本的Apk文件应用某种具体测试技术进行测试
+  class TestPlan {
+      String name
+      TestCase [] testList
+  }
+
+
+'一个具体的测试技术有自己的配置选项
+abstract class TestCaseGenerator {
+    String name
+    String description
+'    Config config
 }
 
-cloud "Test Technology" {
-    [各个版本] --> [手动录制测试用例Record]
-    [各个版本] --> [随机测试Monkey]
-    [各个版本] --> [深度遍历DFS]
-    [各个版本] --> [进化算法EA]
-    [各个版本] --> [智能遍历DFS+]
+'一个抽象设置项
+'abstract class Config {
+'}
+
+'一个具体的测试结果
+abstract class TestResult{
+    Date startTime
+    Date endTime
 }
 
-node "测试集合" {
-    [手动录制测试用例Record] --> [测试用例集]
+'树形结果图
+class TreeResult {
+    Object treemap
 }
 
-node "测试用例" {
-    [测试用例集] --> [Test Case]
-    [随机测试Monkey] --> [Test Case]
-    [深度遍历DFS] --> [Test Case]
-    [进化算法EA] --> [Test Case]
-    [智能遍历DFS+] --> [Test Case]
-    [Test Case] --> [测试结果]
+'日志列表
+class LogResult {
+    String[] logs
 }
 
-package "测试结果" {
-    [树形图]
-    [运行脚本]
-    [缺陷]
-    [测试日志]
+'缺陷列表
+class BugResult {
+   String[] bugs
 }
+
+
+class TestCase{
+    Result[] result
+}
+
+class HumanGenerator {
+    String input()
+}
+
+class DFSGenerator {
+    String dfs()
+}
+
+class RecorderGenerator {
+    String record()
+}
+
+class MonkeyGenerator {
+   String run()
+}
+
+TestResult <|-- TreeResult
+TestResult <|-- LogResult
+TestResult <|-- BugResult
+
+ModelDrivenTesting -- TestCaseGenerator : implements >
+TestCaseGenerator <|-- HumanGenerator
+TestCaseGenerator <|-- DFSGenerator
+TestCaseGenerator <|-- RecorderGenerator
+
+TestPlan -- TestCaseRunner:  has >
+
+TestCaseRunner -- TestCase
+TestCaseRunner -- TestResult : produces >
+
+TestCaseRunner -- ModelDrivenTesting : < implements
+TestCaseRunner -- RandomTesting : < implements
+
+TestPlan *-- TestCase: Contains >
+TestCaseGenerator -- TestPlan: < has
+TestCase -- TestCaseGenerator: < generates
+TestCase *-- TestResult: contains
+
+TestCaseGenerator -- RandomTesting : < implements
+MonkeyGenerator --|> TestCaseGenerator
+Project *-- Apk: contains
+Apk *-- TestPlan: contains
+
 
 @enduml

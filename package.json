@@ -31,12 +31,14 @@
     "ejs": "~2.3.3",
     "eventproxy": "^0.3.4",
     "express": "~4.13.1",
+    "global": "^4.3.1",
     "gm": "^1.22.0",
     "lodash": "^4.11.1",
     "mongoose": "^4.4.12",
     "morgan": "~1.6.1",
     "nata-device": "^0.1.12",
     "nata-dfs": "^0.1.0",
+    "nodemon": "^1.11.0",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.4.5",
     "ws": "^1.1.0"
@@ -45,8 +47,8 @@
     "babel-eslint": "^6.0.4",
     "eslint": "^2.11.1",
     "eslint-config-airbnb": "^9.0.1",
-    "eslint-plugin-react": "^5.1.1",
     "eslint-plugin-import": "^1.8.0",
-    "eslint-plugin-jsx-a11y": "^1.2.2"
+    "eslint-plugin-jsx-a11y": "^1.2.2",
+    "eslint-plugin-react": "^5.1.1"
   }
 }

@@ -33,11 +33,11 @@ process.on('message', (m) => {
 
     runner.play().then(() => {
       process.send(
-        { type: 'success', device_id: m.device_id }
+        { type: 'success', device_id: m.device_id, record_id: m.record_id}
       )
     }).catch((err) => {
       console.log(err)
-      process.send({ type: 'failure', device_id: m.device_id })
+      process.send({ type: 'failure', device_id: m.device_id,record_id: m.record_id })
     })
   } else if (m.type === 'stop') {
     const device = map.get(m.device_id)

@@ -66,6 +66,7 @@ module.exports.uiActions = (req, res, next) => {
   const device = new Device(deviceId)
   device.getUIActionCommands()
   .then((actions) => {
+    console.log(actions);
     return res.status(200).json(actions)
   })
   .catch((err) => {

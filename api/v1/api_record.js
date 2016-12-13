@@ -75,9 +75,25 @@ function submitLog(recordId, data) {
   })
 }
 
+function finishTask(recordId) {
+  console.log(recordId)
+  RecordModel.findOne({ _id: recordId }, (err, record) => {
+    if (err || !record) {
+      console.log(err)
+    }
+
+    record.status = 'success'
+    record.save((error) => {
+      console.log(error)
+    })
+  })
+}
+
 runner.on('message', (m) => {
   if (m.type === 'success' || m.type === 'failure') {
+    console.log('success')
     _.remove(runningDevices, (id) => id === m.device_id)
+   finishTask(m.record_id)
   }
 
   if (m.type === 'summary') {
@@ -199,6 +215,8 @@ module.exports.cancel = (req, res, next) => {
     })
   })
 }
+
+
 
 module.exports.finish = (req, res, next) => {
   const recordId = req.params.id
